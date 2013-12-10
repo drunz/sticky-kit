@@ -17,7 +17,11 @@
     if (opts == null) {
       opts = {};
     }
-    sticky_class = opts.sticky_class, inner_scrolling = opts.inner_scrolling, parent_selector = opts.parent, offset_top = opts.offset_top;
+    scroll_container = opts.scroll_container;
+    sticky_class = opts.sticky_class;
+    inner_scrolling = opts.inner_scrolling;
+    parent_selector = opts.parent;
+    offset_top = opts.offset_top;
     if (offset_top == null) {
       offset_top = 0;
     }
@@ -80,7 +84,10 @@
       offset = offset_top;
       tick = function() {
         var css, delta, scroll, will_bottom, win_height;
-        scroll = win.scrollTop();
+        if (scroll_container)
+          scroll = $(scroll_container).scrollTop();
+        else
+          scroll = win.scrollTop();
         if (last_pos != null) {
           delta = scroll - last_pos;
         }
@@ -163,7 +170,10 @@
         return tick();
       };
       detach = function() {
-        win.off("scroll", tick);
+        if (scroll_container)
+          $(scroll_container).off("scroll", tick);
+        else
+          win.off("scroll", tick);
         $(document.body).off("sticky_kit:recalc", recalc_and_tick);
         elm.off("sticky_kit:detach", detach);
         elm.removeData("sticky_kit");
@@ -178,7 +188,10 @@
           return spacer.remove();
         }
       };
-      win.on("scroll", tick);
+      if (scroll_container)
+        $(scroll_container).on("scroll", tick);
+      else
+        win.on("scroll", tick);
       win.on("resize", recalc_and_tick);
       $(document.body).on("sticky_kit:recalc", recalc_and_tick);
       elm.on("sticky_kit:detach", detach);
